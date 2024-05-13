@@ -7,9 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Controller
-@RequestMapping("/users")
 public class UsersController {
 
     private  final UserServiceImp userService;
@@ -21,39 +22,39 @@ public class UsersController {
 
 
     @GetMapping({"/users","/"})
-    public String getAllUsers(Model model, @ModelAttribute("flashMessage") String flashAttribute) {
-        model.addAttribute("users", userService.getAllUsers());
+    public String getAllUsers(Model model) {
+        List<User> usersList = userService.getAllUsers();
+        model.addAttribute("users", usersList);
         return "users";
     }
 
 
-    @GetMapping("/new")
-    public String addUserForm(Model model) {
-        model.addAttribute("user-create", new User());
-        return "user-create";
+    @GetMapping("/user-create")
+    public String addUserForm() {
+        return "/user-create";
     }
 
-    @PostMapping("/new")
-    public String addUserSubmit(@ModelAttribute User user) {
+    @PostMapping("/user-create")
+    public String addUserSubmit(User user) {
         userService.createOrUpdateUser(user);
         return "redirect:/users";
     }
 
-    @GetMapping("/edit/{id}")
-    public String editUserForm(@PathVariable Long id, Model model) {
+    @GetMapping("/user-edit")
+    public String editUserForm(@RequestParam Long id, Model model) {
         User user = userService.readUser(id);
-        model.addAttribute("edit-user", user);
-        return "edit-user";
+        model.addAttribute("user", user);
+        return "/user-edit";
     }
 
-    @PostMapping("/edit-user/{id}")
-    public String editUserSubmit(@PathVariable Long id, @ModelAttribute User user) {
+    @PostMapping("/user-edit")
+    public String editUserSubmit(User user) {
         userService.createOrUpdateUser(user);
         return "redirect:/users";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    @GetMapping("/users/delete")
+    public String deleteUser(@RequestParam Long id) {
         userService.deleteUser(id);
         return "redirect:/users";
     }
